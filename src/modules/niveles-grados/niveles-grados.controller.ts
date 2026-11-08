@@ -1,15 +1,15 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { NivelesGradosService } from './niveles-grados.service.js';
-import { CreateNivelesGradoDto } from './dto/create-niveles-grado.dto.js';
-import { UpdateNivelesGradoDto } from './dto/update-niveles-grado.dto.js';
+import { CreateCicloLectivoDto } from './dto/create-ciclo-lectivo.dto.js';
+import { UpdateCicloLectivoDto } from './dto/update-ciclo-lectivo.dto.js';
 
 @Controller('niveles-grados')
 export class NivelesGradosController {
   constructor(private readonly nivelesGradosService: NivelesGradosService) {}
 
   @Post()
-  create(@Body() createNivelesGradoDto: CreateNivelesGradoDto) {
-    return this.nivelesGradosService.create(createNivelesGradoDto);
+  create(@Body() createCicloLectivoDto: CreateCicloLectivoDto) {
+    return this.nivelesGradosService.create(createCicloLectivoDto);
   }
 
   @Get()
@@ -23,8 +23,8 @@ export class NivelesGradosController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateNivelesGradoDto: UpdateNivelesGradoDto) {
-    return this.nivelesGradosService.update(+id, updateNivelesGradoDto);
+  update(@Param('id') id: string, @Body() updateCicloLectivoDto: UpdateCicloLectivoDto) {
+    return this.nivelesGradosService.update(+id, updateCicloLectivoDto);
   }
 
   @Delete(':id')
