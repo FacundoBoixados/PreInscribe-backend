@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateNivelesGradoDto } from './dto/create-niveles-grado.dto.js';
-import { UpdateNivelesGradoDto } from './dto/update-niveles-grado.dto.js';
+import { CreateCicloLectivoDto } from './dto/create-ciclo-lectivo.dto.js';
+import { UpdateCicloLectivoDto } from './dto/update-ciclo-lectivo.dto.js';
 
 @Injectable()
 export class NivelesGradosService {
-  create(createNivelesGradoDto: CreateNivelesGradoDto) {
+  create(createCicloLectivoDto: CreateCicloLectivoDto) {
     return 'This action adds a new nivelesGrado';
   }
 
@@ -16,7 +16,7 @@ export class NivelesGradosService {
     return `This action returns a #${id} nivelesGrado`;
   }
 
-  update(id: number, updateNivelesGradoDto: UpdateNivelesGradoDto) {
+  update(id: number, updateCicloLectivoDto: UpdateCicloLectivoDto) {
     return `This action updates a #${id} nivelesGrado`;
   }
 
