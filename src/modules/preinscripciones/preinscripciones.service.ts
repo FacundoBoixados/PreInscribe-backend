@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePreinscripcioneDto } from './dto/create-preinscripcione.dto.js';
-import { UpdatePreinscripcioneDto } from './dto/update-preinscripcione.dto.js';
+import { CreatePreinscripcionDto } from './dto/create-preinscripcione.dto.js';
+import { UpdatePreinscripcionDto } from './dto/update-preinscripcione.dto.js';
 
 @Injectable()
 export class PreinscripcionesService {
-  create(createPreinscripcioneDto: CreatePreinscripcioneDto) {
-    return 'This action adds a new preinscripcione';
+  create(createPreinscripcionDto: CreatePreinscripcionDto) {
+    return 'This action adds a new preinscripcion';
   }
 
   findAll() {
@@ -13,14 +13,14 @@ export class PreinscripcionesService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} preinscripcione`;
+    return `This action returns a #${id} preinscripcion`;
   }
 
-  update(id: number, updatePreinscripcioneDto: UpdatePreinscripcioneDto) {
-    return `This action updates a #${id} preinscripcione`;
+  update(id: number, updatePreinscripcionDto: UpdatePreinscripcionDto) {
+    return `This action updates a #${id} preinscripcion`;
   }
 
   remove(id: number) {
-    return `This action removes a #${id} preinscripcione`;
+    return `This action removes a #${id} preinscripcion`;
   }
 }
