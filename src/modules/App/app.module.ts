@@ -10,9 +10,10 @@ import { EscuelasModule } from '../escuelas/escuelas.module.js';
 import { EvaluacionesModule } from '../evaluaciones/evaluaciones.module.js';
 import { NivelesGradosModule } from '../niveles-grados/niveles-grados.module.js';
 import { VacantesModule } from '../vacantes/vacantes.module.js';
+import { PrismaModule } from '../prisma/prisma.module.js';
 
 @Module({
-  imports: [AuthModule, UsuariosModule, AlumnosModule, PreinscripcionesModule, DocumentosModule, EscuelasModule, EvaluacionesModule, NivelesGradosModule, VacantesModule],
+  imports: [AuthModule, UsuariosModule, AlumnosModule, PreinscripcionesModule, DocumentosModule, EscuelasModule, EvaluacionesModule, NivelesGradosModule, VacantesModule, PrismaModule],
   controllers: [AppController],
   providers: [AppService],
 })
