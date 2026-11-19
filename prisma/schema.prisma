@@ -1,0 +1,235 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Rol {
+  id       Int       @id @default(autoincrement())
+  nombre   String    @unique @db.VarChar(30)
+  usuarios Usuario[]
+}
+
+model Usuario {
+  id           Int      @id @default(autoincrement())
+  rolId        Int
+  nombre       String   @db.VarChar(80)
+  apellido     String   @db.VarChar(80)
+  dni          String   @unique @db.VarChar(8)
+  email        String   @unique @db.VarChar(150)
+  telefono     String?  @db.VarChar(30)
+  passwordHash String   @db.VarChar(255)
+  activo       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+
+  rol                   Rol                  @relation(fields: [rolId], references: [id])
+  tokensReset           PasswordResetToken[]
+  escuelasAdministradas AdminEscuela[]
+  alumnos               Alumno[]
+  historialEstados      HistorialEstado[]
+
+  @@index([rolId])
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int
+  tokenHash String   @db.VarChar(255)
+  expiraEn  DateTime @db.Timestamptz(3)
+  usado     Boolean  @default(false)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  
+  @@index([usuarioId])
+}
+
+model Localidad {
+  id        Int       @id @default(autoincrement())
+  nombre    String    @db.VarChar(100)
+  provincia String    @db.VarChar(100)
+  escuelas  Escuela[]
+
+  @@unique([nombre, provincia])
+}
+
+model Escuela {
+  id          Int      @id @default(autoincrement())
+  localidadId Int
+  nombre      String   @db.VarChar(150)
+  cue         String?  @unique @db.VarChar(15)
+  direccion   String   @db.VarChar(200)
+  telefono    String?  @db.VarChar(30)
+  email       String?  @db.VarChar(150)
+  tipoGestion String   @default("PUBLICA") @db.VarChar(10)
+  activa      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  localidad Localidad               @relation(fields: [localidadId], references: [id])
+  admins    AdminEscuela[]
+  periodos  PeriodoPreinscripcion[]
+  vacantes  Vacante[]
+
+  @@index([localidadId])
+}
+
+model AdminEscuela {
+  usuarioId Int
+  escuelaId Int
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  escuela Escuela @relation(fields: [escuelaId], references: [id], onDelete: Cascade)
+
+  @@id([usuarioId, escuelaId])
+}
+
+model NivelEducativo {
+  id     Int     @id @default(autoincrement())
+  nombre String  @unique @db.VarChar(30)
+  grados Grado[]
+}
+
+model Grado {
+  id         Int    @id @default(autoincrement())
+  nivelId    Int
+  nombre     String @db.VarChar(40)
+  orden      Int
+  edadMinima Int
+  edadMaxima Int
+
+  nivel    NivelEducativo @relation(fields: [nivelId], references: [id])
+  vacantes Vacante[]
+
+  @@unique([nivelId, nombre])
+}
+
+model CicloLectivo {
+  id     Int     @id @default(autoincrement())
+  anio   Int     @unique
+  activo Boolean @default(false)
+
+  periodos PeriodoPreinscripcion[]
+  vacantes Vacante[]
+}
+
+model PeriodoPreinscripcion {
+  id          Int      @id @default(autoincrement())
+  escuelaId   Int
+  cicloId     Int
+  fechaInicio DateTime @db.Date
+  fechaFin    DateTime @db.Date
+
+  escuela Escuela      @relation(fields: [escuelaId], references: [id])
+  ciclo   CicloLectivo @relation(fields: [cicloId], references: [id])
+
+  @@unique([escuelaId, cicloId])
+}
+
+model Vacante {
+  id        Int @id @default(autoincrement())
+  escuelaId Int
+  gradoId   Int
+  cicloId   Int
+  cupoTotal Int
+
+  escuela          Escuela          @relation(fields: [escuelaId], references: [id])
+  grado            Grado            @relation(fields: [gradoId], references: [id])
+  ciclo            CicloLectivo     @relation(fields: [cicloId], references: [id])
+  preinscripciones Preinscripcion[]
+
+  @@unique([escuelaId, gradoId, cicloId])
+}
+
+model Alumno {
+  id              Int      @id @default(autoincrement())
+  tutorId         Int
+  nombre          String   @db.VarChar(80)
+  apellido        String   @db.VarChar(80)
+  dni             String   @unique @db.VarChar(8)
+  fechaNacimiento DateTime @db.Date
+  parentesco      String   @default("HIJO/A") @db.VarChar(30)
+  domicilio       String?  @db.VarChar(200)
+  observaciones   String?  @db.Text
+  activo          Boolean  @default(true)
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+
+  tutor            Usuario          @relation(fields: [tutorId], references: [id])
+  preinscripciones Preinscripcion[]
+
+  @@index([tutorId])
+}
+
+model EstadoPreinscripcion {
+  id      Int     @id @default(autoincrement())
+  nombre  String  @unique @db.VarChar(30)
+  esFinal Boolean @default(false)
+
+  preinscripciones Preinscripcion[]
+  historial        HistorialEstado[]
+}
+
+model Preinscripcion {
+  id                    Int      @id @default(autoincrement())
+  alumnoId              Int
+  escuelaId             Int
+  gradoId               Int
+  cicloId               Int
+  estadoId              Int
+  tieneHermanoEnEscuela Boolean  @default(false)
+  observaciones         String?  @db.Text
+  createdAt             DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime @updatedAt @db.Timestamptz(3)
+
+  alumno     Alumno               @relation(fields: [alumnoId], references: [id])
+  estado     EstadoPreinscripcion @relation(fields: [estadoId], references: [id])
+  vacante    Vacante              @relation(fields: [escuelaId, gradoId, cicloId], references: [escuelaId, gradoId, cicloId])
+  historial  HistorialEstado[]
+  documentos Documento[]
+
+  @@unique([alumnoId, escuelaId, gradoId, cicloId])
+
+  @@index([escuelaId, cicloId])
+  @@index([estadoId])
+  @@index([alumnoId])
+}
+
+model HistorialEstado {
+  id               Int      @id @default(autoincrement())
+  preinscripcionId Int
+  estadoId         Int
+  usuarioId        Int
+  comentario       String?  @db.Text
+  fecha            DateTime @default(now()) @db.Timestamptz(3)
+
+  preinscripcion Preinscripcion       @relation(fields: [preinscripcionId], references: [id], onDelete: Cascade)
+  estado         EstadoPreinscripcion @relation(fields: [estadoId], references: [id])
+  usuario        Usuario              @relation(fields: [usuarioId], references: [id])
+
+  @@index([preinscripcionId])
+}
+
+model TipoDocumento {
+  id          Int         @id @default(autoincrement())
+  nombre      String      @unique @db.VarChar(60)
+  obligatorio Boolean     @default(true)
+  documentos  Documento[]
+}
+
+model Documento {
+  id               Int      @id @default(autoincrement())
+  preinscripcionId Int
+  tipoDocumentoId  Int
+  nombreArchivo    String   @db.VarChar(200)
+  rutaArchivo      String   @db.VarChar(400)
+  mimeType         String   @db.VarChar(100)
+  tamanoBytes      Int
+  subidoEn         DateTime @default(now()) @db.Timestamptz(3)
+
+  preinscripcion Preinscripcion @relation(fields: [preinscripcionId], references: [id], onDelete: Cascade)
+  tipoDocumento  TipoDocumento  @relation(fields: [tipoDocumentoId], references: [id])
+
+  @@unique([preinscripcionId, tipoDocumentoId])
+}

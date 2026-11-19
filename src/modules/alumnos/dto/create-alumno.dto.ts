@@ -1,15 +1,20 @@
-
 import {
-  IsString,
+  IsDateString,
+  IsInt,
   IsNotEmpty,
   IsOptional,
-  MaxLength,
+  IsPositive,
+  IsString,
   Length,
   Matches,
-  IsDateString,
+  MaxLength,
 } from 'class-validator';
 
 export class CreateAlumnoDto {
+  @IsInt()
+  @IsPositive()
+  tutorId: number;
+
   @IsString()
   @IsNotEmpty()
   @MaxLength(80)
@@ -27,12 +32,12 @@ export class CreateAlumnoDto {
 
   @IsDateString()
   @IsNotEmpty()
-  fecha_nacimiento: string;
+  fechaNacimiento: string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
   @MaxLength(30)
-  parentesco: string;
+  parentesco?: string;
 
   @IsOptional()
   @IsString()

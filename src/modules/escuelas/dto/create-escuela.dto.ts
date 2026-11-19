@@ -1,21 +1,21 @@
 import {
-  IsIn,
   IsEmail,
+  IsIn,
+  IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
 } from 'class-validator';
 
 export class CreateEscuelaDto {
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty({ message: 'El ID de la localidad es obligatorio' })
-  localidad_id: number;
+  localidadId: number;
 
   @IsString()
   @IsNotEmpty({ message: 'El nombre de la escuela es obligatorio' })
-  @MaxLength(50)
+  @MaxLength(150)
   nombre: string;
 
   @IsOptional()
@@ -25,21 +25,23 @@ export class CreateEscuelaDto {
 
   @IsString()
   @IsNotEmpty({ message: 'La dirección es obligatoria' })
-  @MaxLength(50)
+  @MaxLength(200)
   direccion: string;
 
   @IsOptional()
   @IsString()
-  @MaxLength(20)
+  @MaxLength(30)
   telefono?: string;
 
   @IsOptional()
   @IsEmail({}, { message: 'El formato del correo electrónico no es válido' })
-  @MaxLength(50)
+  @MaxLength(150)
   email?: string;
 
   @IsString()
   @IsNotEmpty({ message: 'El tipo de gestión es obligatorio' })
-  @IsIn(['PUBLICA', 'PRIVADA'], { message: 'El tipo de gestión debe ser PUBLICA o PRIVADA' })
-  tipo_gestion: string;
+  @IsIn(['PUBLICA', 'PRIVADA'], {
+    message: 'El tipo de gestión debe ser PUBLICA o PRIVADA',
+  })
+  tipoGestion: string;
 }

@@ -1,14 +1,36 @@
 import {
   IsInt,
+  IsNotEmpty,
   IsPositive,
+  IsString,
+  MaxLength,
 } from 'class-validator';
 
 export class CreateDocumentoDto {
   @IsInt()
   @IsPositive()
-  preinscripcion_id: number;
+  preinscripcionId: number;
 
   @IsInt()
   @IsPositive()
-  tipo_documento_id: number;
+  tipoDocumentoId: number;
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(200)
+  nombreArchivo: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(400)
+  rutaArchivo: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(100)
+  mimeType: string; // ej: "application/pdf", "image/jpeg"
+
+  @IsInt()
+  @IsPositive()
+  tamanoBytes: number;
 }
