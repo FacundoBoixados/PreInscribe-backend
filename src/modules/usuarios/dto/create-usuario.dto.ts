@@ -1,14 +1,13 @@
-
 import {
   IsEmail,
   IsInt,
   IsNotEmpty,
   IsOptional,
+  IsPositive,
   IsString,
   Length,
   Matches,
   MaxLength,
-  IsPositive,
 } from 'class-validator';
 
 export class CreateUsuarioDto {
@@ -37,7 +36,12 @@ export class CreateUsuarioDto {
   @MaxLength(30)
   telefono?: string;
 
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(255)
+  passwordHash: string;
+
   @IsInt()
   @IsPositive()
-  rol_id: number;
+  rolId: number;
 }
