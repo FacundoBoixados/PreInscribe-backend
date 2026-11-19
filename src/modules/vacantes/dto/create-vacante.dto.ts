@@ -1,25 +1,20 @@
-import {
-  IsInt,
-  IsNotEmpty,
-  IsNumber,
-  Min,
-} from 'class-validator';
+import { IsInt, IsNotEmpty, Min } from 'class-validator';
 
 export class CreateVacanteDto {
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty({ message: 'El ID de la escuela es obligatorio' })
-  escuela_id: number;
+  escuelaId: number;
 
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty({ message: 'El ID del grado es obligatorio' })
-  grado_id: number;
+  gradoId: number;
 
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty({ message: 'El ID del ciclo lectivo es obligatorio' })
-  ciclo_id: number;
+  cicloId: number;
 
   @IsInt({ message: 'El cupo total debe ser un número entero' })
   @Min(0, { message: 'El cupo total no puede ser negativo' })
   @IsNotEmpty({ message: 'El cupo total es obligatorio' })
-  cupo_total: number;
+  cupoTotal: number;
 }
