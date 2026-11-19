@@ -1,15 +1,6 @@
-import {
-  IsBoolean,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types'; // o '@nestjs/swagger' si usas Swagger
+import { CreatePreinscripcionDto } from './create-preinscripcione.dto.js';
 
-export class UpdatePreinscripcionDto {
-  @IsOptional()
-  @IsBoolean()
-  tiene_hermano_en_escuela?: boolean;
-
-  @IsOptional()
-  @IsString()
-  observaciones?: string;
-}
+export class UpdatePreinscripcionDto extends PartialType(
+  CreatePreinscripcionDto,
+) {}

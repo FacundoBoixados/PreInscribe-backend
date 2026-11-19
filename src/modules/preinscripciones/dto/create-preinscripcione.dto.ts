@@ -1,31 +1,31 @@
 import {
-  IsInt,
-  IsPositive,
   IsBoolean,
+  IsInt,
   IsOptional,
+  IsPositive,
   IsString,
 } from 'class-validator';
 
 export class CreatePreinscripcionDto {
   @IsInt()
   @IsPositive()
-  alumno_id: number;
+  alumnoId: number;
 
   @IsInt()
   @IsPositive()
-  escuela_id: number;
+  escuelaId: number;
 
   @IsInt()
   @IsPositive()
-  grado_id: number;
+  gradoId: number;
 
   @IsInt()
   @IsPositive()
-  ciclo_id: number;
+  cicloId: number;
 
   @IsOptional()
   @IsBoolean()
-  tiene_hermano_en_escuela?: boolean;
+  tieneHermanoEnEscuela?: boolean;
 
   @IsOptional()
   @IsString()
