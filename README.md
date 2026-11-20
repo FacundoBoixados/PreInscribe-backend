@@ -1,132 +1,224 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# PreInscribe – Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST desarrollada con **NestJS, TypeScript y PostgreSQL** para gestionar el sistema de preinscripciones multi-escuelas.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+El proyecto forma parte del Trabajo Final Integrador (TFI) y busca centralizar y simplificar el proceso de preinscripción, permitiendo gestionar usuarios, alumnos, escuelas, vacantes y solicitudes de inscripción en diferentes escuelas.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Descripción del proyecto
 
-## Project setup
+PreInscribe es un sistema web orientado a facilitar la gestión de preinscripciones escolares.
 
-```bash
-$ npm install
-```
+El backend proporciona una API REST que permite:
 
-## Compile and run the project
+- Gestionar usuarios y sus roles.
+- Registrar y administrar alumnos.
+- Consultar y administrar escuelas.
+- Gestionar niveles educativos y grados.
+- Administrar ciclos lectivos y períodos de preinscripción.
+- Gestionar solicitudes de preinscripción.
+- Administrar documentación asociada.
+- Gestionar vacantes disponibles.
+- Registrar usuarios e iniciar sesión mediante autenticación JWT.
 
-```bash
-# development
-$ npm run start
+## Tecnologías utilizadas
 
-# watch mode
-$ npm run start:dev
+| Tecnología | Uso |
+|---|---|
+| Node.js | Entorno de ejecución |
+| NestJS | Framework backend |
+| TypeScript | Lenguaje de programación |
+| PostgreSQL | Base de datos relacional |
+| Prisma ORM | Acceso y consultas a la base de datos |
+| JWT | Autenticación mediante tokens |
+| bcrypt | Encriptación y verificación de contraseñas |
+| class-validator | Validación de datos de entrada |
 
-# production mode
-$ npm run start:prod
-```
+## Requisitos previos
 
-## Run tests
+Antes de instalar el proyecto, es necesario contar con:
 
-```bash
-# unit tests
-$ npm run test
+- Node.js.
+- npm.
+- PostgreSQL.
+- Git.
 
-# e2e tests
-$ npm run test:e2e
+## Instalación
 
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Clonar el repositorio:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+git clone URL_DEL_REPOSITORIO
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Observability
-
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
-
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
-
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
-
-To add it to this project, run this and approve the code it prints at [observe.nestjs.com/link](https://observe.nestjs.com/link) - signing up for free if you have no account:
+Ingresar a la carpeta del proyecto:
 
 ```bash
-$ npx @nestjs/observe link
+cd PreInscribe-backend
 ```
 
-It installs `@nestjs/observe`, wires it into `AppModule` and `main.ts`, and writes the app key and secret into `.env`, which every `nest start` script (`start`, `start:dev`, `start:debug`) then loads. In production, set `OBSERVE_APP_KEY` and `OBSERVE_APP_SECRET` in the environment instead.
-
-Or do it by hand:
+Instalar las dependencias:
 
 ```bash
-$ npm install @nestjs/observe
+npm install
 ```
 
-Then follow the [setup guide](https://docs.nestjs.com/observability/sdk) - it takes a single import and an app key.
+## Configuración de variables de entorno
 
-The free plan needs no payment details and covers 300,000 events a month. You can also browse the [live demo](https://www.observe-demo.nestjs.com/dashboard) first - the whole dashboard over a busy service's data, with nothing to install.
+Crear un archivo `.env` en la raíz del proyecto.
 
-## Resources
+Configurar las siguientes variables:
 
-Check out a few resources that may come in handy when working with NestJS:
+```env
+PORT=4000
+DATABASE_URL="postgresql://USUARIO:CONTRASEÑA@localhost:5432/tfi_preinscripciones?schema=preinscripciones"
+JWT_SECRET="TU_SECRETO_JWT"
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observe](https://observe.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+**Importante:**
 
-## Support
+- Reemplazar los datos de conexión por los correspondientes al entorno local.
+- `DATABASE_URL` debe apuntar a la base de datos PostgreSQL y al esquema utilizado por el proyecto.
+- `JWT_SECRET` se utiliza para firmar los tokens de autenticación.
+- El archivo `.env` contiene información sensible y no debe subirse al repositorio.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Base de datos
 
-## Stay in touch
+El proyecto utiliza PostgreSQL como sistema de gestión de base de datos y Prisma ORM para interactuar con ella.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+La base de datos utilizada durante el desarrollo se denomina `tfi_preinscripciones` y trabaja con el esquema `preinscripciones`.
 
-## License
+Prisma permite consultar, crear, modificar y eliminar registros mediante los servicios del backend.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Ejecución del proyecto
+
+Iniciar el servidor en modo desarrollo:
+
+```bash
+npm run start:dev
+```
+
+Ejecutar en modo normal:
+
+```bash
+npm run start
+```
+
+Ejecutar en modo producción:
+
+```bash
+npm run start:prod
+```
+
+Por defecto, el servidor utiliza el puerto `4000`.
+
+## Estructura del proyecto
+
+La organización principal del backend es la siguiente:
+
+```text
+src/
+├── modules/
+│   ├── auth/
+│   ├── usuarios/
+│   ├── alumnos/
+│   ├── preinscripciones/
+│   ├── documentos/
+│   ├── escuelas/
+│   ├── niveles-grados/
+│   └── vacantes/
+│
+├── prisma/
+│   ├── prisma.module.ts
+│   └── prisma.service.ts
+│
+├── app.module.ts
+└── main.ts
+
+prisma/
+└── schema.prisma
+
+prisma.config.ts
+.env
+README.md
+```
+
+Cada módulo contiene sus controladores, servicios y DTOs correspondientes.
+
+- **Controllers:** reciben las solicitudes HTTP y exponen los endpoints.
+- **Services:** contienen la lógica de negocio y las operaciones con la base de datos.
+- **DTOs:** definen y validan los datos recibidos por la API.
+- **PrismaService:** centraliza el acceso a PostgreSQL mediante Prisma.
+
+## Módulos y endpoints
+
+### Autenticación – `/auth`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| POST | `/auth/register` | Registrar un usuario |
+| POST | `/auth/login` | Iniciar sesión y obtener un JWT |
+
+Las contraseñas se almacenan mediante hashes generados con bcrypt.
+
+### Usuarios – `/usuarios`
+
+Operaciones de creación, consulta, modificación y eliminación de usuarios.
+
+### Alumnos – `/alumnos`
+
+Operaciones para registrar, consultar, modificar y eliminar alumnos.
+
+### Preinscripciones – `/preinscripciones`
+
+Operaciones para gestionar las solicitudes de preinscripción.
+
+### Documentos – `/documentos`
+
+Operaciones para gestionar los documentos asociados a las preinscripciones.
+
+### Escuelas – `/escuelas`
+
+Operaciones de administración y consulta de escuelas.
+
+### Niveles y grados – `/niveles-grados`
+
+Permite gestionar:
+
+- Niveles educativos.
+- Grados.
+- Ciclos lectivos.
+- Períodos de preinscripción.
+
+### Vacantes – `/vacantes`
+
+Operaciones para administrar y consultar las vacantes disponibles.
+
+## Autenticación
+
+El módulo de autenticación permite registrar usuarios e iniciar sesión.
+
+El proceso de inicio de sesión verifica las credenciales mediante bcrypt y, si son correctas, genera un token JWT.
+
+La respuesta incluye:
+
+- Token de acceso (`access_token`).
+- Información del usuario autenticado.
+- Rol asociado al usuario.
+
+## Pruebas
+
+Las solicitudes de la API pueden probarse utilizando Postman.
+
+Entre las pruebas realizadas se encuentran:
+
+- Registro de usuarios.
+- Validación de usuarios duplicados.
+- Inicio de sesión exitoso.
+- Rechazo de credenciales incorrectas.
+- Generación de tokens JWT.
+
+## Licencia
+
+Proyecto académico desarrollado como parte del Trabajo Final Integrador (TFI).
