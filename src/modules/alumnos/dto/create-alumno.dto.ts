@@ -1,3 +1,4 @@
+
 import {
   IsDateString,
   IsInt,
@@ -13,26 +14,26 @@ import {
 export class CreateAlumnoDto {
   @IsInt()
   @IsPositive()
-  tutorId: number;
+  tutorId!: number;
 
   @IsString()
   @IsNotEmpty()
   @MaxLength(80)
-  nombre: string;
+  nombre!: string;
 
   @IsString()
   @IsNotEmpty()
   @MaxLength(80)
-  apellido: string;
+  apellido!: string;
 
   @IsString()
   @Length(7, 8)
   @Matches(/^\d+$/)
-  dni: string;
+  dni!: string;
 
   @IsDateString()
   @IsNotEmpty()
-  fechaNacimiento: string;
+  fechaNacimiento!: string;
 
   @IsOptional()
   @IsString()

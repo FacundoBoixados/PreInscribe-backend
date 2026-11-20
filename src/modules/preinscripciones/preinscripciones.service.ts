@@ -1,9 +1,11 @@
+
 import {
   BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreatePreinscripcionDto } from './dto/create-preinscripcione.dto.js';
 import { UpdatePreinscripcionDto } from './dto/update-preinscripcione.dto.js';
@@ -13,7 +15,8 @@ export class PreinscripcionesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createPreinscripcionDto: CreatePreinscripcionDto) {
-    const { alumnoId, escuelaId, gradoId, cicloId } = createPreinscripcionDto;
+    const { alumnoId, escuelaId, gradoId, cicloId, observaciones, tieneHermanoEnEscuela } =
+      createPreinscripcionDto;
 
     await this.validateVacante(escuelaId, gradoId, cicloId);
     await this.validatePreinscripcionUnica(
@@ -23,7 +26,7 @@ export class PreinscripcionesService {
       cicloId,
     );
 
-    const estadoInicial = await this.prisma.estadoPreinscripcion.findUnique({
+    const estadoInicial = await this.prisma.estado_preinscripcion.findUnique({
       where: { nombre: 'PENDIENTE' },
       select: { id: true },
     });
@@ -35,7 +38,17 @@ export class PreinscripcionesService {
     }
 
     return this.prisma.preinscripcion.create({
-      data: { ...createPreinscripcionDto, estadoId: estadoInicial.id },
+      data: {
+        alumno_id: alumnoId,
+        escuela_id: escuelaId,
+        grado_id: gradoId,
+        ciclo_id: cicloId,
+        estado_id: estadoInicial.id,
+        ...(observaciones !== undefined && { observaciones }),
+        ...(tieneHermanoEnEscuela !== undefined && {
+          tiene_hermano_en_escuela: tieneHermanoEnEscuela,
+        }),
+      },
     });
   }
 
@@ -49,37 +62,71 @@ export class PreinscripcionesService {
     });
 
     if (!preinscripcion) {
-      throw new NotFoundException(`No existe una preinscripción con id ${id}.`);
+      throw new NotFoundException(
+        `No existe una preinscripción con id ${id}.`,
+      );
     }
 
     return preinscripcion;
   }
 
-  async update(id: number, updatePreinscripcionDto: UpdatePreinscripcionDto) {
+  async update(
+    id: number,
+    updatePreinscripcionDto: UpdatePreinscripcionDto,
+  ) {
     const actual = await this.findOne(id);
 
-    const { alumnoId, escuelaId, gradoId, cicloId } = updatePreinscripcionDto;
+    const {
+      alumnoId,
+      escuelaId,
+      gradoId,
+      cicloId,
+      observaciones,
+      tieneHermanoEnEscuela,
+    } = updatePreinscripcionDto;
 
-    if (alumnoId || escuelaId || gradoId || cicloId) {
-      const alumno = alumnoId ?? actual.alumnoId;
-      const escuela = escuelaId ?? actual.escuelaId;
-      const grado = gradoId ?? actual.gradoId;
-      const ciclo = cicloId ?? actual.cicloId;
+    if (
+      alumnoId !== undefined ||
+      escuelaId !== undefined ||
+      gradoId !== undefined ||
+      cicloId !== undefined
+    ) {
+      const alumno = alumnoId ?? actual.alumno_id;
+      const escuela = escuelaId ?? actual.escuela_id;
+      const grado = gradoId ?? actual.grado_id;
+      const ciclo = cicloId ?? actual.ciclo_id;
 
       await this.validateVacante(escuela, grado, ciclo);
-      await this.validatePreinscripcionUnica(alumno, escuela, grado, ciclo, id);
+      await this.validatePreinscripcionUnica(
+        alumno,
+        escuela,
+        grado,
+        ciclo,
+        id,
+      );
     }
 
     return this.prisma.preinscripcion.update({
       where: { id },
-      data: updatePreinscripcionDto,
+      data: {
+        ...(alumnoId !== undefined && { alumno_id: alumnoId }),
+        ...(escuelaId !== undefined && { escuela_id: escuelaId }),
+        ...(gradoId !== undefined && { grado_id: gradoId }),
+        ...(cicloId !== undefined && { ciclo_id: cicloId }),
+        ...(observaciones !== undefined && { observaciones }),
+        ...(tieneHermanoEnEscuela !== undefined && {
+          tiene_hermano_en_escuela: tieneHermanoEnEscuela,
+        }),
+      },
     });
   }
 
   async remove(id: number) {
     await this.findOne(id);
 
-    return this.prisma.preinscripcion.delete({ where: { id } });
+    return this.prisma.preinscripcion.delete({
+      where: { id },
+    });
   }
 
   private async validateVacante(
@@ -88,7 +135,11 @@ export class PreinscripcionesService {
     cicloId: number,
   ) {
     const vacante = await this.prisma.vacante.findFirst({
-      where: { escuelaId, gradoId, cicloId },
+      where: {
+        escuela_id: escuelaId,
+        grado_id: gradoId,
+        ciclo_id: cicloId,
+      },
       select: { id: true },
     });
 
@@ -107,7 +158,12 @@ export class PreinscripcionesService {
     preinscripcionId?: number,
   ) {
     const existente = await this.prisma.preinscripcion.findFirst({
-      where: { alumnoId, escuelaId, gradoId, cicloId },
+      where: {
+        alumno_id: alumnoId,
+        escuela_id: escuelaId,
+        grado_id: gradoId,
+        ciclo_id: cicloId,
+      },
       select: { id: true },
     });
 

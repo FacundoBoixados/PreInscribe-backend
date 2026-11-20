@@ -1,9 +1,11 @@
+
 import {
   BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateUsuarioDto } from './dto/create-usuario.dto.js';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto.js';
@@ -26,7 +28,9 @@ export class UsuariosService {
   }
 
   findAll() {
-    return this.prisma.usuario.findMany({ omit: { passwordHash: true } });
+    return this.prisma.usuario.findMany({
+      omit: { passwordHash: true },
+    });
   }
 
   async findOne(id: number) {
@@ -36,7 +40,9 @@ export class UsuariosService {
     });
 
     if (!usuario) {
-      throw new NotFoundException(`No existe un usuario con id ${id}.`);
+      throw new NotFoundException(
+        `No existe un usuario con id ${id}.`,
+      );
     }
 
     return usuario;
@@ -48,10 +54,12 @@ export class UsuariosService {
     if (updateUsuarioDto.dni) {
       await this.validateDni(updateUsuarioDto.dni, id);
     }
+
     if (updateUsuarioDto.email) {
       updateUsuarioDto.email = updateUsuarioDto.email.toLowerCase();
       await this.validateEmail(updateUsuarioDto.email, id);
     }
+
     if (updateUsuarioDto.rolId) {
       await this.validateRol(updateUsuarioDto.rolId);
     }
@@ -79,18 +87,22 @@ export class UsuariosService {
     });
 
     if (existente && existente.id !== usuarioId) {
-      throw new ConflictException('Ya existe un usuario con ese DNI.');
+      throw new ConflictException(
+        'Ya existe un usuario con ese DNI.',
+      );
     }
   }
 
   private async validateEmail(email: string, usuarioId?: number) {
-    const existente = await this.prisma.usuario.findUnique({
+    const existente = await this.prisma.usuario.findFirst({
       where: { email },
       select: { id: true },
     });
 
     if (existente && existente.id !== usuarioId) {
-      throw new ConflictException('Ya existe un usuario con ese email.');
+      throw new ConflictException(
+        'Ya existe un usuario con ese email.',
+      );
     }
   }
 
@@ -101,7 +113,9 @@ export class UsuariosService {
     });
 
     if (!rol) {
-      throw new BadRequestException(`No existe un rol con id ${rolId}.`);
+      throw new BadRequestException(
+        `No existe un rol con id ${rolId}.`,
+      );
     }
   }
 }

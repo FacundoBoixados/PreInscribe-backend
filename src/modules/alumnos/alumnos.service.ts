@@ -1,3 +1,4 @@
+
 import {
   ConflictException,
   Injectable,
@@ -14,10 +15,13 @@ export class AlumnosService {
   async create(createAlumnoDto: CreateAlumnoDto) {
     await this.validateDni(createAlumnoDto.dni);
 
+    const { fechaNacimiento, tutorId, ...resto } = createAlumnoDto;
+
     return this.prisma.alumno.create({
       data: {
-        ...createAlumnoDto,
-        fechaNacimiento: new Date(createAlumnoDto.fechaNacimiento),
+        ...resto,
+        tutor_id: tutorId,
+        fecha_nacimiento: new Date(fechaNacimiento),
       },
     });
   }
@@ -43,13 +47,16 @@ export class AlumnosService {
       await this.validateDni(updateAlumnoDto.dni, id);
     }
 
-    const { fechaNacimiento, ...resto } = updateAlumnoDto;
+    const { fechaNacimiento, tutorId, ...resto } = updateAlumnoDto;
 
     return this.prisma.alumno.update({
       where: { id },
       data: {
         ...resto,
-        ...(fechaNacimiento && { fechaNacimiento: new Date(fechaNacimiento) }),
+        ...(tutorId !== undefined && { tutor_id: tutorId }),
+        ...(fechaNacimiento && {
+          fecha_nacimiento: new Date(fechaNacimiento),
+        }),
       },
     });
   }
