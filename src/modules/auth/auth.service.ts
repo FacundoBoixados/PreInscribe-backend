@@ -3,8 +3,10 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 
+import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateAuthDto } from './dto/create-auth.dto.js';
 import { LoginAuthDto } from './dto/login-auth.dto.js';
@@ -12,7 +14,10 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async register(createAuthDto: CreateAuthDto) {
     const email = createAuthDto.email.trim().toLowerCase();
@@ -80,7 +85,55 @@ export class AuthService {
     };
   }
 
-  login(loginAuthDto: LoginAuthDto) {
-    return 'Inicio de sesión pendiente de implementar';
+  async login(loginAuthDto: LoginAuthDto) {
+    const email = loginAuthDto.email.trim().toLowerCase();
+
+    // Buscar usuario por email
+    const usuario = await this.prisma.usuario.findFirst({
+      where: { email },
+      include: {
+        rol: true,
+      },
+    });
+
+    // Verificar si existe y está activo
+    if (!usuario || !usuario.activo) {
+      throw new UnauthorizedException('Credenciales incorrectas.');
+    }
+
+    // Comparar contraseña ingresada con el hash almacenado
+    const passwordValida = await bcrypt.compare(
+      loginAuthDto.password,
+      usuario.passwordHash,
+    );
+
+    if (!passwordValida) {
+      throw new UnauthorizedException('Credenciales incorrectas.');
+    }
+
+    // Generar token JWT
+    const payload = {
+      sub: usuario.id,
+      email: usuario.email,
+      rol: usuario.rol.nombre,
+    };
+
+    const accessToken = await this.jwtService.signAsync(payload);
+
+    // Devolver token y datos seguros del usuario
+    return {
+      message: 'Inicio de sesión exitoso.',
+      access_token: accessToken,
+      usuario: {
+        id: usuario.id,
+        nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        dni: usuario.dni,
+        email: usuario.email,
+        telefono: usuario.telefono,
+        activo: usuario.activo,
+        rol: usuario.rol.nombre,
+      },
+    };
   }
 }
