@@ -27,11 +27,13 @@ export class AlumnosService {
   }
 
   findAll() {
-    return this.prisma.alumno.findMany();
+    return this.prisma.alumno.findMany({ where: { activo: true } });
   }
 
   async findOne(id: number) {
-    const alumno = await this.prisma.alumno.findUnique({ where: { id } });
+    const alumno = await this.prisma.alumno.findUnique({ 
+      where: { id, activo: true }, 
+    });
 
     if (!alumno) {
       throw new NotFoundException(`No existe un alumno con id ${id}.`);
@@ -64,7 +66,10 @@ export class AlumnosService {
   async remove(id: number) {
     await this.findOne(id);
 
-    return this.prisma.alumno.delete({ where: { id } });
+    return this.prisma.alumno.update({ 
+      where: { id },
+      data: { activo: false },
+    });
   }
 
   private async validateDni(dni: string, alumnoId?: number) {

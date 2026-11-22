@@ -35,12 +35,12 @@ export class EscuelasService {
   }
 
   findAll() {
-    return this.prisma.escuela.findMany();
+    return this.prisma.escuela.findMany({ where: { activa: true } });
   }
 
   async findOne(id: number) {
     const escuela = await this.prisma.escuela.findUnique({
-      where: { id },
+      where: { id, activa: true },
     });
 
     if (!escuela) {
@@ -94,8 +94,9 @@ export class EscuelasService {
   async remove(id: number) {
     await this.findOne(id);
 
-    return this.prisma.escuela.delete({
+    return this.prisma.escuela.update({
       where: { id },
+      data: { activa: false },
     });
   }
 

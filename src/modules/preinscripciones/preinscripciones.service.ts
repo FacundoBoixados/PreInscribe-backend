@@ -122,12 +122,35 @@ export class PreinscripcionesService {
   }
 
   async remove(id: number) {
-    await this.findOne(id);
+  const actual = await this.prisma.preinscripcion.findUnique({
+    where: { id },
+    include: { estado_preinscripcion: true },
+  });
 
-    return this.prisma.preinscripcion.delete({
-      where: { id },
-    });
+  if (!actual) {
+    throw new NotFoundException(`No existe una preinscripción con id ${id}.`);
   }
+
+  if (actual.estado_preinscripcion.es_final) {
+    throw new BadRequestException(
+      `No se puede cancelar una preinscripción en estado ${actual.estado_preinscripcion.nombre}.`,
+    );
+  }
+
+  const cancelada = await this.prisma.estado_preinscripcion.findUnique({
+    where: { nombre: 'CANCELADA' },
+    select: { id: true },
+  });
+
+  if (!cancelada) {
+    throw new BadRequestException('No existe el estado CANCELADA en la base.');
+  }
+
+  return this.prisma.preinscripcion.update({
+    where: { id },
+    data: { estado_id: cancelada.id, actualizada_en: new Date() },
+  });
+}
 
   private async validateVacante(
     escuelaId: number,
@@ -139,6 +162,7 @@ export class PreinscripcionesService {
         escuela_id: escuelaId,
         grado_id: gradoId,
         ciclo_id: cicloId,
+        eliminado: false,
       },
       select: { id: true },
     });

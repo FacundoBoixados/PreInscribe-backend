@@ -29,13 +29,14 @@ export class UsuariosService {
 
   findAll() {
     return this.prisma.usuario.findMany({
+      where: { activo: true },
       omit: { passwordHash: true },
     });
   }
 
   async findOne(id: number) {
     const usuario = await this.prisma.usuario.findUnique({
-      where: { id },
+      where: { id, activo: true },
       omit: { passwordHash: true },
     });
 
@@ -74,8 +75,9 @@ export class UsuariosService {
   async remove(id: number) {
     await this.findOne(id);
 
-    return this.prisma.usuario.delete({
+    return this.prisma.usuario.update({
       where: { id },
+      data: { activo: false },
       omit: { passwordHash: true },
     });
   }

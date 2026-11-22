@@ -13,31 +13,47 @@ import { UpdateDocumentoDto } from './dto/update-documento.dto.js';
 export class DocumentosService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createDocumentoDto: CreateDocumentoDto) {
-    await this.validateDocumentoUnico(
-      createDocumentoDto.preinscripcionId,
-      createDocumentoDto.tipoDocumentoId,
-    );
+ async create(createDocumentoDto: CreateDocumentoDto) {
+  const existente = await this.prisma.documento.findFirst({
+    where: {
+      preinscripcion_id: createDocumentoDto.preinscripcionId,
+      tipo_documento_id: createDocumentoDto.tipoDocumentoId,
+    },
+    select: { id: true, eliminado: true },
+  });
 
-    return this.prisma.documento.create({
-      data: {
-        nombre_archivo: createDocumentoDto.nombreArchivo,
-        ruta_archivo: createDocumentoDto.rutaArchivo,
-        mime_type: createDocumentoDto.mimeType,
-        tamano_bytes: createDocumentoDto.tamanoBytes,
-        preinscripcion_id: createDocumentoDto.preinscripcionId,
-        tipo_documento_id: createDocumentoDto.tipoDocumentoId,
-      },
+  if (existente && !existente.eliminado) {
+    throw new ConflictException(
+      'La preinscripción ya tiene un documento de ese tipo.',
+    );
+  }
+
+  const data = {
+    nombre_archivo: createDocumentoDto.nombreArchivo,
+    ruta_archivo: createDocumentoDto.rutaArchivo,
+    mime_type: createDocumentoDto.mimeType,
+    tamano_bytes: createDocumentoDto.tamanoBytes,
+    preinscripcion_id: createDocumentoDto.preinscripcionId,
+    tipo_documento_id: createDocumentoDto.tipoDocumentoId,
+  };
+
+  if (existente) {
+    return this.prisma.documento.update({
+      where: { id: existente.id },
+      data: { ...data, eliminado: false, subido_en: new Date() },
     });
   }
 
+  return this.prisma.documento.create({ data });
+}
+
   findAll() {
-    return this.prisma.documento.findMany();
+    return this.prisma.documento.findMany({ where: { eliminado: false } });
   }
 
   async findOne(id: number) {
     const documento = await this.prisma.documento.findUnique({
-      where: { id },
+      where: { id, eliminado: false },
     });
 
     if (!documento) {
@@ -97,8 +113,9 @@ export class DocumentosService {
   async remove(id: number) {
     await this.findOne(id);
 
-    return this.prisma.documento.delete({
+    return this.prisma.documento.update({
       where: { id },
+      data: { eliminado: true }
     });
   }
 
