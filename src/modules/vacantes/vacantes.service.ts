@@ -29,12 +29,12 @@ export class VacantesService {
   }
 
   findAll() {
-    return this.prisma.vacante.findMany();
+    return this.prisma.vacante.findMany({ where: { eliminado: false }});
   }
 
   async findOne(id: number) {
     const vacante = await this.prisma.vacante.findUnique({
-      where: { id },
+      where: { id, eliminado: false },
     });
 
     if (!vacante) {
@@ -78,8 +78,9 @@ export class VacantesService {
   async remove(id: number) {
     await this.findOne(id);
 
-    return this.prisma.vacante.delete({
+    return this.prisma.vacante.update({
       where: { id },
+      data: { eliminado: true }
     });
   }
 

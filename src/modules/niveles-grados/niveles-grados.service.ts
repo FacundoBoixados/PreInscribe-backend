@@ -1,4 +1,3 @@
-
 import {
   ConflictException,
   Injectable,
@@ -40,12 +39,14 @@ export class NivelesGradosService {
   }
 
   findAllGrados() {
-    return this.prisma.grado.findMany();
+    return this.prisma.grado.findMany({
+      where: { eliminado: false },
+    });
   }
 
   async findOneGrado(id: number) {
     const grado = await this.prisma.grado.findUnique({
-      where: { id },
+      where: { id, eliminado: false },
     });
 
     if (!grado) {
@@ -85,8 +86,9 @@ export class NivelesGradosService {
   async removeGrado(id: number) {
     await this.findOneGrado(id);
 
-    return this.prisma.grado.delete({
+    return this.prisma.grado.update({
       where: { id },
+      data: { eliminado: true },
     });
   }
 
@@ -101,12 +103,14 @@ export class NivelesGradosService {
   }
 
   findAllCiclosLectivos() {
-    return this.prisma.ciclo_lectivo.findMany();
+    return this.prisma.ciclo_lectivo.findMany({
+      where: { eliminado: false },
+    });
   }
 
   async findOneCicloLectivo(id: number) {
     const ciclo = await this.prisma.ciclo_lectivo.findUnique({
-      where: { id },
+      where: { id, eliminado: false },
     });
 
     if (!ciclo) {
@@ -134,8 +138,9 @@ export class NivelesGradosService {
   async removeCicloLectivo(id: number) {
     await this.findOneCicloLectivo(id);
 
-    return this.prisma.ciclo_lectivo.delete({
+    return this.prisma.ciclo_lectivo.update({
       where: { id },
+      data: { eliminado: true },
     });
   }
 
@@ -155,12 +160,14 @@ export class NivelesGradosService {
   }
 
   findAllPeriodos() {
-    return this.prisma.periodo_preinscripcion.findMany();
+    return this.prisma.periodo_preinscripcion.findMany({
+      where: { eliminado: false },
+    });
   }
 
   async findOnePeriodo(id: number) {
     const periodo = await this.prisma.periodo_preinscripcion.findUnique({
-      where: { id },
+      where: { id, eliminado: false },
     });
 
     if (!periodo) {
@@ -208,8 +215,9 @@ export class NivelesGradosService {
   async removePeriodo(id: number) {
     await this.findOnePeriodo(id);
 
-    return this.prisma.periodo_preinscripcion.delete({
+    return this.prisma.periodo_preinscripcion.update({
       where: { id },
+      data: { eliminado: true },
     });
   }
 
