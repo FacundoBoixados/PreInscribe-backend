@@ -1,0 +1,237 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Rol {
+  id       Int       @id @default(autoincrement()) @db.SmallInt
+  nombre   String    @unique @db.VarChar(30)
+  usuarios Usuario[]
+
+  @@map("rol")
+}
+
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+model Usuario {
+  id                   Int                    @id @default(autoincrement())
+  rolId                Int                    @map("rol_id") @db.SmallInt
+  nombre               String                 @db.VarChar(80)
+  apellido             String                 @db.VarChar(80)
+  dni                  String                 @unique @db.VarChar(8)
+  email                String                 @db.VarChar(150)
+  telefono             String?                @db.VarChar(30)
+  passwordHash         String                 @map("password_hash") @db.VarChar(255)
+  activo               Boolean                @default(true)
+  createdAt            DateTime               @default(now()) @map("creado_en") @db.Timestamptz(6)
+  admin_escuela        admin_escuela[]
+  alumno               alumno[]
+  historial_estado     historial_estado[]
+  password_reset_token password_reset_token[]
+  rol                  Rol                    @relation(fields: [rolId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([rolId], map: "ix_usuario_rol")
+  @@map("usuario")
+}
+
+model admin_escuela {
+  usuario_id Int
+  escuela_id Int
+  escuela    escuela @relation(fields: [escuela_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  usuario    Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([usuario_id, escuela_id])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model alumno {
+  id               Int              @id @default(autoincrement())
+  tutor_id         Int
+  nombre           String           @db.VarChar(80)
+  apellido         String           @db.VarChar(80)
+  dni              String           @unique @db.VarChar(8)
+  fecha_nacimiento DateTime         @db.Date
+  parentesco       String           @default("HIJO/A") @db.VarChar(30)
+  domicilio        String?          @db.VarChar(200)
+  observaciones    String?
+  activo           Boolean          @default(true)
+  creado_en        DateTime         @default(now()) @db.Timestamptz(6)
+  usuario          Usuario          @relation(fields: [tutor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  preinscripcion   preinscripcion[]
+
+  @@index([tutor_id], map: "ix_alumno_tutor")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model ciclo_lectivo {
+  id                     Int                      @id @default(autoincrement()) @db.SmallInt
+  anio                   Int                      @unique @db.SmallInt
+  activo                 Boolean                  @default(false)
+  eliminado              Boolean                  @default(false)
+  periodo_preinscripcion periodo_preinscripcion[]
+  vacante                vacante[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model documento {
+  id                Int            @id @default(autoincrement())
+  preinscripcion_id Int
+  tipo_documento_id Int            @db.SmallInt
+  nombre_archivo    String         @db.VarChar(200)
+  ruta_archivo      String         @db.VarChar(400)
+  mime_type         String         @db.VarChar(100)
+  tamano_bytes      Int
+  subido_en         DateTime       @default(now()) @db.Timestamptz(6)
+  eliminado         Boolean        @default(false)
+  preinscripcion    preinscripcion @relation(fields: [preinscripcion_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  tipo_documento    tipo_documento @relation(fields: [tipo_documento_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([preinscripcion_id, tipo_documento_id])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model escuela {
+  id                     Int                      @id @default(autoincrement())
+  localidad_id           Int
+  nombre                 String                   @db.VarChar(150)
+  cue                    String?                  @unique @db.VarChar(15)
+  direccion              String                   @db.VarChar(200)
+  telefono               String?                  @db.VarChar(30)
+  email                  String?                  @db.VarChar(150)
+  tipo_gestion           String                   @default("PUBLICA") @db.VarChar(10)
+  activa                 Boolean                  @default(true)
+  creado_en              DateTime                 @default(now()) @db.Timestamptz(6)
+  admin_escuela          admin_escuela[]
+  localidad              localidad                @relation(fields: [localidad_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  periodo_preinscripcion periodo_preinscripcion[]
+  vacante                vacante[]
+
+  @@index([localidad_id], map: "ix_escuela_localidad")
+}
+
+model estado_preinscripcion {
+  id               Int                @id @default(autoincrement()) @db.SmallInt
+  nombre           String             @unique @db.VarChar(30)
+  es_final         Boolean            @default(false)
+  historial_estado historial_estado[]
+  preinscripcion   preinscripcion[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model grado {
+  id              Int             @id @default(autoincrement()) @db.SmallInt
+  nivel_id        Int             @db.SmallInt
+  nombre          String          @db.VarChar(40)
+  orden           Int             @db.SmallInt
+  edad_minima     Int             @db.SmallInt
+  edad_maxima     Int             @db.SmallInt
+  eliminado       Boolean         @default(false)
+  nivel_educativo nivel_educativo @relation(fields: [nivel_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  vacante         vacante[]
+
+  @@unique([nivel_id, nombre])
+}
+
+model historial_estado {
+  id                    Int                   @id @default(autoincrement())
+  preinscripcion_id     Int
+  estado_id             Int                   @db.SmallInt
+  usuario_id            Int
+  comentario            String?
+  fecha                 DateTime              @default(now()) @db.Timestamptz(6)
+  estado_preinscripcion estado_preinscripcion @relation(fields: [estado_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  preinscripcion        preinscripcion        @relation(fields: [preinscripcion_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  usuario               Usuario               @relation(fields: [usuario_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([preinscripcion_id], map: "ix_historial_preinsc")
+}
+
+model localidad {
+  id        Int       @id @default(autoincrement())
+  nombre    String    @db.VarChar(100)
+  provincia String    @db.VarChar(100)
+  escuela   escuela[]
+
+  @@unique([nombre, provincia])
+}
+
+model nivel_educativo {
+  id     Int     @id @default(autoincrement()) @db.SmallInt
+  nombre String  @unique @db.VarChar(30)
+  grado  grado[]
+}
+
+model password_reset_token {
+  id         Int      @id @default(autoincrement())
+  usuario_id Int
+  token_hash String   @db.VarChar(255)
+  expira_en  DateTime @db.Timestamptz(6)
+  usado      Boolean  @default(false)
+  creado_en  DateTime @default(now()) @db.Timestamptz(6)
+  usuario    Usuario  @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([usuario_id], map: "ix_reset_usuario")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model periodo_preinscripcion {
+  id            Int           @id @default(autoincrement())
+  escuela_id    Int
+  ciclo_id      Int           @db.SmallInt
+  fecha_inicio  DateTime      @db.Date
+  fecha_fin     DateTime      @db.Date
+  eliminado     Boolean       @default(false)
+  ciclo_lectivo ciclo_lectivo @relation(fields: [ciclo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  escuela       escuela       @relation(fields: [escuela_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([escuela_id, ciclo_id])
+}
+
+model preinscripcion {
+  id                       Int                   @id @default(autoincrement())
+  alumno_id                Int
+  escuela_id               Int
+  grado_id                 Int                   @db.SmallInt
+  ciclo_id                 Int                   @db.SmallInt
+  estado_id                Int                   @db.SmallInt
+  tiene_hermano_en_escuela Boolean               @default(false)
+  observaciones            String?
+  creada_en                DateTime              @default(now()) @db.Timestamptz(6)
+  actualizada_en           DateTime              @default(now()) @db.Timestamptz(6)
+  documento                documento[]
+  historial_estado         historial_estado[]
+  vacante                  vacante               @relation(fields: [escuela_id, grado_id, ciclo_id], references: [escuela_id, grado_id, ciclo_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_preinscripcion_vacante")
+  alumno                   alumno                @relation(fields: [alumno_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  estado_preinscripcion    estado_preinscripcion @relation(fields: [estado_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([alumno_id, escuela_id, grado_id, ciclo_id], map: "ux_preinscripcion_unica")
+  @@index([alumno_id], map: "ix_preinsc_alumno")
+  @@index([escuela_id, ciclo_id], map: "ix_preinsc_escuela_ciclo")
+  @@index([estado_id], map: "ix_preinsc_estado")
+}
+
+model tipo_documento {
+  id          Int         @id @default(autoincrement()) @db.SmallInt
+  nombre      String      @unique @db.VarChar(60)
+  obligatorio Boolean     @default(true)
+  documento   documento[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model vacante {
+  id             Int              @id @default(autoincrement())
+  escuela_id     Int
+  grado_id       Int              @db.SmallInt
+  ciclo_id       Int              @db.SmallInt
+  cupo_total     Int              @db.SmallInt
+  eliminado      Boolean          @default(false)
+  preinscripcion preinscripcion[]
+  ciclo_lectivo  ciclo_lectivo    @relation(fields: [ciclo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  escuela        escuela          @relation(fields: [escuela_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  grado          grado            @relation(fields: [grado_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([escuela_id, grado_id, ciclo_id])
+}
